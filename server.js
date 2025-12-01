@@ -7,7 +7,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 // ======== CONFIG ========
-const AUTOJOINER_KEY = "alezchangito69";
+const AUTOJOINER_KEY = "ezputonigga";
 const AUTOJOINER_BUFFER_CLEAN_SEC = 120;
 
 // ======== WEBHOOKS ========
