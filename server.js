@@ -145,23 +145,23 @@ setInterval(async ()=>{
     const buffer = serverBuffers[jobId];
     if(!buffer || buffer.length===0) continue;
 
-    // ======== DETECCIÓN DE TIERS ========
-    
-  let tiersToSend = {
-  "1_9m":    buffer.filter(b => b.value < 10_000_000),
-  "10_49m":  buffer.filter(b => b.value >= 10_000_000 && b.value < 50_000_000),
-  "50_99m":  buffer.filter(b => b.value >= 50_000_000 && b.value < 100_000_000),
-  "100m":    buffer.filter(b => b.value >= 100_000_000)
+// ======== DETECCIÓN DE TIERS CORREGIDA ========
+let tiersToSend = {
+  "1-9m":    buffer.filter(b => b.value < 10_000_000),
+  "10-49m":  buffer.filter(b => b.value >= 10_000_000 && b.value < 50_000_000),
+  "50-99m":  buffer.filter(b => b.value >= 50_000_000 && b.value < 100_000_000),
+  "100m+":   buffer.filter(b => b.value >= 100_000_000)
 };
-for(const tierKey of Object.keys(tiersToSend)){
+
+for (const tierKey of Object.keys(tiersToSend)) {
   const list = tiersToSend[tierKey];
-  if(!list || list.length===0) continue;
-  list.sort((a,b)=>b.value-a.value);
+  if (!list || list.length === 0) continue;
+  list.sort((a, b) => b.value - a.value);
 
   const lines = [`\`\`\`${list[0].serverId}\`\`\``];
-  for(let i=0;i<list.length;i++){
+  for (let i = 0; i < list.length; i++) {
     let line = `**${list[i].name} — ${list[i].gen}**`;
-    if(i===0 && tierKey!=="1_9m") line = `🥇 **__${list[i].name} — ${list[i].gen}__**`;
+    if (i === 0 && tierKey !== "1-9m") line = `🥇 **__${list[i].name} — ${list[i].gen}__**`;
     lines.push(line);
   }
   lines.push(`\n👥 **Jugadores:** ${list[0].players}`);
@@ -169,23 +169,23 @@ for(const tierKey of Object.keys(tiersToSend)){
   const priority = getPriorityBrainrot(list);
 
   const embed = {
-    title: priority?`⚡ ${priority.name} — ${priority.gen}`:`⚡ Nova Notifier`,
+    title: priority ? `⚡ ${priority.name} — ${priority.gen}` : `⚡ Nova Notifier`,
     description: lines.join("\n"),
     color:
-      tierKey === "1_9m"   ? 0x00AEEF :   // Azul
-      tierKey === "10_49m" ? 0x00FF00 :   // Verde
-      tierKey === "50_99m" ? 0xFFA500 :   // Naranja
+      tierKey === "1-9m"   ? 0x00AEEF :   // Azul
+      tierKey === "10-49m" ? 0x00FF00 :   // Verde
+      tierKey === "50-99m" ? 0xFFA500 :   // Naranja
       0xFF0000,                           // Rojo para 100m+
-    footer:{text:`Made by Kyurem • Nova Notifier`},
-    timestamp:new Date(list[0].timestamp*1000).toISOString(),
-    thumbnail:{url:getThumbnail(list)}
+    footer: { text: `Made by Kyurem • Nova Notifier` },
+    timestamp: new Date(list[0].timestamp * 1000).toISOString(),
+    thumbnail: { url: getThumbnail(list) }
   };
 
-  const namesKey = list.map(b=>`${b.name}-${b.gen}`).sort().join("_");
+  const namesKey = list.map(b => `${b.name}-${b.gen}`).sort().join("_");
   const key = `main_${jobId}_${tierKey}_${namesKey}`;
   promises.push(sendEmbed(WEBHOOKS[tierKey], ROLE_MENTIONS[tierKey], embed, key));
 }
-
+    
 
     
 // ======== HIGHLIGHT FILTER 150M OR PRIORITY ========
