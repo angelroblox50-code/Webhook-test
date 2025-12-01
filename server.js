@@ -186,24 +186,21 @@ for (const tierKey of Object.keys(tiersToSend)) {
   promises.push(sendEmbed(WEBHOOKS[tierKey], ROLE_MENTIONS[tierKey], embed, key));
 }
     
-
-    
-// ======== HIGHLIGHT FILTER 150M OR PRIORITY ========
+// ======== HIGHLIGHT FILTER 50M+ ========
 const seen = new Set(); 
 const unique = [];
 
 for (const b of buffer) {
-  const isPriority = PRIORITY_NAMES.includes(b.name);
-  const is150mPlus = b.value >= 150_000_000;
-
-  // Solo acepta: 150M+ O Priority
-  if (!isPriority && !is150mPlus) continue;
+  // Solo brainrots >= 50M
+  if (b.value < 50_000_000) continue;
 
   const k = `${b.serverId}_${b.name}_${b.gen}`;
   if (seen.has(k)) continue;
   seen.add(k);
   unique.push(b);
 }
+    
+    
 
 if (unique.length > 0) {
   unique.sort((a,b)=>b.value - a.value);
